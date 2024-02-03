@@ -1,0 +1,75 @@
+﻿@page "/dishorders"
+@inject HttpClient Http
+@inject NavigationManager NavMan
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+<h3>DishOrders</h3>
+
+
+@if (dishOrders.Count == 0)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Order Id</th>
+        <th>Name </th>
+        <th>Description</th>
+        <th>Order Time</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var order in dishOrders)
+      {
+        <tr>
+          <td>@order.OrderId</td>
+          <td>@order.Name</td>
+          <td>@order.Description</td>
+          <td>@order.OrderTime</td>
+          <td>
+            <button class="btn btn-primary" @onclick="@(() => EditOrder(@order.OrderId))">Edit</button>
+            <button class="btn btn-danger" @onclick="@(() => DeleteOrder(@order.OrderId))">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+<button class="btn btn-primary" @onclick="AddOrder">Add New Order</button>
+
+@code {
+  List<DishOrder> dishOrders = new List<DishOrder>();
+
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadDishOrders();
+  }
+
+  void AddOrder()
+  {
+    NavMan.NavigateTo($"order");
+  }
+
+  void EditOrder(string id)
+  {
+    NavMan.NavigateTo($"order/{id}");
+  }
+
+  async Task DeleteOrder(string id)
+  {
+    await Http.DeleteAsync($"api/dishorders/{id}");
+    await LoadDishOrders();
+  }
+
+  async Task LoadDishOrders()
+  {
+    var result = await Http.GetFromJsonAsync<List<DishOrder>>("api/dishorders");
+
+    if (result is not null)
+      dishOrders = result;
+  }
+}
