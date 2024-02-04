@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using RestoProject.Client.Pages;
 using RestoProject.Components;
 using RestoProject.Data;
+using RestoProject.Services.CategoryService;
+using RestoProject.Services.DishService;
+using RestoProject.Services.StatsService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DataContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IDishService, DishService>();
+builder.Services.AddScoped<IStatsService, StatsService>();
 
 var app = builder.Build();
 
