@@ -1,0 +1,73 @@
+@page "/c/{categoryurl}"
+@inject ICategoryService CategoryService
+@inject IDishService DishService
+@implements IDisposable
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+<ul class="list-unstyled">
+  @foreach (var product in DishService.Dish)
+  {
+    <li class="media my-3">
+      <div class="media-img-wrapper mr-2">
+        <a href="/dish/@product.Id">
+          <img class="media-img" src="@product.Image" alt="@product.Name" />
+        </a>
+      </div>
+      <div class="media-body">
+        <a href="/dish/@product.Id">
+          <h4 class="mb-0">@product.Name</h4>
+        </a>
+        <p>@product.Description</p>
+        <h5 class="price">
+          @GetPriceText(product)
+        </h5>
+      </div>
+    </li>
+  }
+</ul>
+
+@code {
+  [Parameter]
+  public string CategoryUrl { get; set; }
+
+  private Category category = null;
+
+  protected override async Task OnParametersSetAsync()
+  {
+    await DishService.LoadProducts(CategoryUrl);
+
+    if (CategoryUrl != null)
+    {
+      category = CategoryService.Categories.FirstOrDefault(c => c.Url.ToLower().Equals(CategoryUrl.ToLower()));
+    }
+    else
+    {
+      category = null;
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    DishService.OnChange += StateHasChanged;
+  }
+
+  public void Dispose()
+  {
+    DishService.OnChange += StateHasChanged;
+  }
+
+  private string GetPriceText(Dish product)
+  {
+    var variants = product.Variants;
+    if (variants.Count == 0)
+    {
+      return string.Empty;
+    }
+    else if (variants.Count == 1)
+    {
+      return $"Rp {variants[0].Price}";
+    }
+    decimal minPrice = variants.Min(v => v.Price);
+    return $"Starting at Rp {minPrice}";
+  }
+}

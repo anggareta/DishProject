@@ -1,0 +1,98 @@
+﻿@page "/dish/{id:int}"
+@inject IDishService DishService
+@inject ICartService CartService
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+<div class="views">
+  <i class="oi oi-eye"></i> @GetViewString()
+</div>
+<div class="media">
+  <div class="media-img-big-wrapper mr-2">
+    <img class="media-img-big" src="@dish.Image" alt="@dish.Name" />
+  </div>
+  <div class="media-body">
+    <h2 class="mb-0">@dish.Name</h2>
+    <p>@dish.Description</p>
+    @if (dish.Variants != null && dish.Variants.Count > 1)
+    {
+      <div class="form-group">
+        <select class="form-control" @bind="currentFlavorId">
+          @foreach (var variant in dish.Variants)
+          {
+            <option value="@variant.FlavorId">@variant.Flavor.Name</option>
+          }
+        </select>
+      </div>
+    }
+    @if (GetSelectedVariant() != null)
+    {
+      @if (GetSelectedVariant().OriginalPrice > GetSelectedVariant().Price)
+      {
+        <h6 class="text-muted original-price">$@GetSelectedVariant().OriginalPrice</h6>
+      }
+      <h4 class="price">
+        $@GetSelectedVariant().Price
+      </h4>
+    }
+    <EditForm Model="cartItem">
+      <div class="form-group">
+        <InputNumber id="quantity" @bind-Value="cartItem.Quantity" class="form-control" style="width: 70px;" />
+      </div>
+    </EditForm>
+    <button class="btn btn-primary" @onclick="AddToCart"><i class="oi oi-cart"></i>&nbsp;&nbsp;&nbsp;Add to Cart</button>
+  </div>
+
+</div>
+
+@code {
+  private Dish dish = new Dish();
+
+  private int currentFlavorId = 1;
+
+  private CartItem cartItem = new CartItem { Quantity = 1 };
+
+  [Parameter]
+  public int Id { get; set; }
+
+  protected override async Task OnParametersSetAsync()
+  {
+    dish = await DishService.GetProduct(Id);
+    if (dish.Variants.Count > 0)
+    {
+      currentFlavorId = dish.Variants[0].FlavorId;
+    }
+  }
+
+  private DishVariant GetSelectedVariant()
+  {
+    var variant = dish.Variants.FirstOrDefault(v => v.FlavorId == currentFlavorId);
+    return variant;
+  }
+
+  private async Task AddToCart()
+  {
+    var dishVariant = GetSelectedVariant();
+
+    cartItem.FlavorId = dishVariant.FlavorId;
+    cartItem.FlavorName = dishVariant.Flavor.Name;
+    cartItem.Image = dish.Image;
+    cartItem.Price = dishVariant.Price;
+    cartItem.DishId = dishVariant.DishId;
+    cartItem.DishName = dish.Name;
+
+    await CartService.AddToCart(cartItem);
+  }
+
+  private string GetViewString()
+  {
+    if (dish.Views > 1000000)
+      return $"{((float)dish.Views / 1000000).ToString("#.##")}M";
+    if (dish.Views > 100000)
+      return $"{((float)dish.Views / 1000).ToString("#")}K";
+    if (dish.Views > 1000)
+      return $"{((float)dish.Views / 1000).ToString("#.##")}K";
+
+    return dish.Views.ToString("0##");
+  }
+
+}
