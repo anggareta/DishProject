@@ -28,10 +28,17 @@ namespace RestoProject.Data
       modelBuilder.Entity<DishVariant>()
         .HasKey(p => new { p.DishId, p.FlavorId });
 
+      modelBuilder.Entity<CartItem>()
+        .HasOne<DishOrder>(d => d.OrdId)
+        .WithMany(c => c.CartItems)
+        .HasForeignKey(d => d.OrderId)
+        .IsRequired(false)
+        .OnDelete(DeleteBehavior.Cascade);
+
       modelBuilder.Entity<Category>().HasData(
-        new Category { Id = 1, Name = "Foods", Url = "foods", Icon = "book" },
-        new Category { Id = 2, Name = "Drinks", Url = "drinks", Icon = "camera-slr" },
-        new Category { Id = 3, Name = "Desserts", Url = "desserts", Icon = "aperture" }
+        new Category { Id = 1, Name = "Foods", Url = "foods", Icon = "bi-list-nested-nav-menu" },
+        new Category { Id = 2, Name = "Drinks", Url = "drinks", Icon = "bi-list-nested-nav-menu" },
+        new Category { Id = 3, Name = "Desserts", Url = "desserts", Icon = "bi-list-nested-nav-menu" }
       );
 
       modelBuilder.Entity<Users>().HasData(
@@ -48,7 +55,7 @@ namespace RestoProject.Data
           CategoryId = 1,
           Name = "Nasi Goreng Kambing",
           Description = "Nasi goreng adalah makanan jalanan populer di Asia. Di beberapa negara Asia, restoran-restoran kecil, gerai-gerai pinggir jalan dan pedagang keliling mengkhususkan diri dalam menyajikan nasi goreng.",
-          Image = "https://placehold.co/200x200/png?text=Nasi+Goreng+Kambing",
+          Image = "https://placehold.co/200x200/png?text=Nasi+Goreng\\nKambing",
           DateCreated = new DateTime(2024, 1, 1)
         },
         new Dish
@@ -81,7 +88,7 @@ namespace RestoProject.Data
       );
 
       modelBuilder.Entity<Flavor>().HasData(
-        new Flavor { Id = 1, Name = "Kaming" },
+        new Flavor { Id = 1, Name = "Kambing" },
         new Flavor { Id = 2, Name = "Sapi" },
         new Flavor { Id = 3, Name = "Ayam" },
         new Flavor { Id = 4, Name = "Ikan" },
@@ -161,9 +168,7 @@ namespace RestoProject.Data
       );
 
       modelBuilder.Entity<DishOrder>().HasData(
-        new DishOrder { OrderId = "ABC01012024-001", Name = "Ayus", Description = "", OrderTime = new DateTime(2024, 1, 1) },
-        new DishOrder { OrderId = "ABC01012024-002", Name = "Icha", Description = "", OrderTime = new DateTime(2024, 1, 1) },
-        new DishOrder { OrderId = "ABC01022024-002", Name = "Ayus", Description = "", OrderTime = new DateTime(2024, 2, 1) }
+        new DishOrder { OrderId = "ABC01012024-001", Name = "Ayus", Description = "Tolong sambel dipisah...", OrderTime = new DateTime(2024, 1, 1) }
       );
 
     }

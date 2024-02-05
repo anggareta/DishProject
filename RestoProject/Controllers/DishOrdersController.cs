@@ -39,6 +39,8 @@ namespace RestoProject.Controllers
       if (result == null)
         return NotFound();
 
+      //var items = await _context.Orders.Select(x => x.);
+
       _context.Remove(result);
       await _context.SaveChangesAsync();
 
@@ -78,8 +80,11 @@ namespace RestoProject.Controllers
         newOrder.OrderId = $"{prefix}-{n}";
       }
       newOrder.OrderTime = DateTime.Now;
-      _context.Orders.AddRange(newOrder.CartItems);
+      //foreach (var item in newOrder.CartItems) {
+      //  item.OrdId = newOrder.OrderId;
+      //}
       _context.DishOrders.Add(newOrder);
+      _context.Orders.AddRange(newOrder.CartItems);
       await _context.SaveChangesAsync();
 
       return Ok(newOrder);

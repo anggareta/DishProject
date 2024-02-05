@@ -42,8 +42,8 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label for="loginEmail" class="form-label">Email</label>
-          <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" autocomplete="off" required @bind-value="user" />
+          <label for="loginUser" class="form-label">Username</label>
+          <input type="email" class="form-control" id="loginUser" autocomplete="off" required @bind-value="user" />
         </div>
         <div class="mb-3">
           <label for="loginPassword" class="form-label">Password</label>
@@ -68,11 +68,13 @@
   protected override void OnInitialized()
   {
     CartService.OnChange += StateHasChanged;
+    UserService.OnChange += StateHasChanged;
   }
 
   public void Dispose()
   {
     CartService.OnChange -= StateHasChanged;
+    UserService.OnChange -= StateHasChanged;
   }
 
   public string? GetUserName()
@@ -114,6 +116,7 @@
         password = null;
         //await LocalStorage.SaveStringAsync("user", user);
         await LocalStorage.SetItemAsStringAsync("user", user);
+        NavMan.NavigateTo("/");
       }
       else
       {

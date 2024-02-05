@@ -19,5 +19,9 @@ namespace RestoProject.Shared.Entities
     public decimal Price { get; set; }
     public string Image { get; set; }
     public int Quantity { get; set; }
+
+    [ForeignKey("OrderId")]
+    public string? OrderId { get; set; }
+    public virtual DishOrder? OrdId { get; set; }
   }
 }

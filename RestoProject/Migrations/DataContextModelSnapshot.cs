@@ -37,9 +37,6 @@ namespace RestoProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DishOrderOrderId")
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<int>("FlavorId")
                         .HasColumnType("int");
 
@@ -51,6 +48,9 @@ namespace RestoProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -59,7 +59,7 @@ namespace RestoProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DishOrderOrderId");
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Orders");
                 });
@@ -163,7 +163,7 @@ namespace RestoProject.Migrations
                             CategoryId = 1,
                             DateCreated = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Nasi goreng adalah makanan jalanan populer di Asia. Di beberapa negara Asia, restoran-restoran kecil, gerai-gerai pinggir jalan dan pedagang keliling mengkhususkan diri dalam menyajikan nasi goreng.",
-                            Image = "https://placehold.co/200x200/png?text=Nasi+Goreng+Kambing",
+                            Image = "https://placehold.co/200x200/png?text=Nasi+Goreng\\nKambing",
                             IsDeleted = false,
                             IsPublic = false,
                             Name = "Nasi Goreng Kambing",
@@ -230,23 +230,9 @@ namespace RestoProject.Migrations
                         new
                         {
                             OrderId = "ABC01012024-001",
-                            Description = "",
+                            Description = "Tolong sambel dipisah...",
                             Name = "Ayus",
                             OrderTime = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            OrderId = "ABC01012024-002",
-                            Description = "",
-                            Name = "Icha",
-                            OrderTime = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            OrderId = "ABC01022024-002",
-                            Description = "",
-                            Name = "Ayus",
-                            OrderTime = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -356,7 +342,7 @@ namespace RestoProject.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Kaming"
+                            Name = "Kambing"
                         },
                         new
                         {
@@ -485,9 +471,12 @@ namespace RestoProject.Migrations
 
             modelBuilder.Entity("RestoProject.Shared.Entities.CartItem", b =>
                 {
-                    b.HasOne("RestoProject.Shared.Entities.DishOrder", null)
+                    b.HasOne("RestoProject.Shared.Entities.DishOrder", "OrdId")
                         .WithMany("CartItems")
-                        .HasForeignKey("DishOrderOrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("OrdId");
                 });
 
             modelBuilder.Entity("RestoProject.Shared.Entities.Dish", b =>

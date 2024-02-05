@@ -17,7 +17,7 @@ namespace RestoProject.Shared.Entities
 
     public string? Description { get; set; }
 
-    public List<CartItem> CartItems { get; set; }
+    public IList<CartItem>? CartItems { get; set; }
 
     public DateTime OrderTime { get; set; }
   }

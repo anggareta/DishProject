@@ -15,6 +15,8 @@ namespace RestoProject.Client.Services.UserService
       _toastService = toastService;
     }
 
+    public event Action OnChange;
+
     public async Task<ResObj> Login(string username, string password)
     {
       UserLogin userLogin = new UserLogin();
@@ -31,6 +33,8 @@ namespace RestoProject.Client.Services.UserService
       {
         _toastService.ShowError("Login failed", null);
       }
+
+      OnChange.Invoke();
 
       return obj;
     }

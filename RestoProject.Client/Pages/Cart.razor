@@ -1,10 +1,13 @@
 ﻿@page "/cart"
 @inject ICartService CartService
+@inject IUserService UserService
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavMan
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
 @if (!orderPlaced)
 {
-  <h3>Shopping Cart</h3>
+  <h3>Menu Cart</h3>
   @if (cartItems == null || cartItems.Count <= 0)
   {
     <span>You have no items in your cart.</span>
@@ -17,7 +20,7 @@
         <div class="item-container">
           <div class="item-image-wrapper"><img src="@item.Image" class="item-image" /></div>
           <div class="item-name">
-            <h5><a href="/product/@item.DishId">@item.DishName</a></h5>
+            <h5><a href="/dish/@item.DishId">@item.DishName</a></h5>
             <span>@item.FlavorName</span><br />
             <button class="btn-delete" @onclick="@(() => DeleteItem(item))">Delete</button>
             <EditForm Model="item">
@@ -31,9 +34,18 @@
       <div class="item-price">
         Total (@cartItems.Count): Rp @cartItems.Sum(item => item.Price * item.Quantity)
       </div>
-      <div style="text-align: center; margin-top: 10px;">
-        <button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
-      </div>
+      @if (loggedIn)
+      {
+        <div style="text-align: center; margin-top: 10px;">
+          <button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
+        </div>
+      }
+      else
+      {
+        <div style="text-align: center; margin-top: 10px;">
+          <h5>Please login first...</h5>
+        </div>
+      }
     </div>
   }
 }
@@ -47,7 +59,7 @@ else
       <div class="item-container">
         <div class="item-image-wrapper"><img src="@item.Image" class="item-image" /></div>
         <div class="item-name">
-          <h5><a href="/product/@item.DishId">@item.DishName</a></h5>
+          <h5><a href="/dish/@item.DishId">@item.DishName</a></h5>
           <span>@item.FlavorName</span><br />
         </div>
         <div class="item-price">Rp @(item.Price * item.Quantity)</div>
@@ -65,7 +77,7 @@ else
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Login Form</h5>
+        <h5 class="modal-title">Submit Order</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -77,8 +89,8 @@ else
           <InputText id="name" @bind-Value="dishOrder.Name" class="form-control" />
         </div>
         <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <InputText id="description" @bind-Value="dishOrder.Description" class="form-control" />
+          <label for="description" class="form-label">Message</label>
+          <InputTextArea id="description" @bind-Value="dishOrder.Description" class="form-control" />
         </div>
 
       </div>
@@ -92,14 +104,27 @@ else
 
 @code {
   public bool show, display, loggedIn;
+  public string? user;
   public DishOrder dishOrder { get; set; } = new DishOrder { OrderId = "" };
 
   List<CartItem> cartItems = new List<CartItem>();
   bool orderPlaced = false;
 
+  protected override void OnInitialized()
+  {
+    UserService.OnChange += StateHasChanged;
+  }
+
+  public void Dispose()
+  {
+    UserService.OnChange -= StateHasChanged;
+  }
+
   protected override async Task OnInitializedAsync()
   {
     cartItems = await CartService.GetCartItems();
+    user = await LocalStorage.GetItemAsStringAsync("user");
+    loggedIn = !string.IsNullOrEmpty(user);
   }
 
   private async Task DeleteItem(CartItem item)

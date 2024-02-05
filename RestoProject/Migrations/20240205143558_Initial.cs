@@ -96,16 +96,17 @@ namespace RestoProject.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    DishOrderOrderId = table.Column<string>(type: "nvarchar(20)", nullable: true)
+                    OrderId = table.Column<string>(type: "nvarchar(20)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_DishOrders_DishOrderOrderId",
-                        column: x => x.DishOrderOrderId,
+                        name: "FK_Orders_DishOrders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "DishOrders",
-                        principalColumn: "OrderId");
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -164,21 +165,16 @@ namespace RestoProject.Migrations
             migrationBuilder.InsertData(
                 table: "DishOrders",
                 columns: new[] { "OrderId", "Description", "Name", "OrderTime" },
-                values: new object[,]
-                {
-                    { "ABC01012024-001", "", "Ayus", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { "ABC01012024-002", "", "Icha", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { "ABC01022024-002", "", "Ayus", new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
-                });
+                values: new object[] { "ABC01012024-001", "Tolong sambel dipisah...", "Ayus", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 table: "TMCategory",
                 columns: new[] { "Id", "Icon", "Name", "Url" },
                 values: new object[,]
                 {
-                    { 1, "book", "Foods", "foods" },
-                    { 2, "camera-slr", "Drinks", "drinks" },
-                    { 3, "aperture", "Desserts", "desserts" }
+                    { 1, "bi-list-nested-nav-menu", "Foods", "foods" },
+                    { 2, "bi-list-nested-nav-menu", "Drinks", "drinks" },
+                    { 3, "bi-list-nested-nav-menu", "Desserts", "desserts" }
                 });
 
             migrationBuilder.InsertData(
@@ -186,7 +182,7 @@ namespace RestoProject.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Kaming" },
+                    { 1, "Kambing" },
                     { 2, "Sapi" },
                     { 3, "Ayam" },
                     { 4, "Ikan" },
@@ -215,7 +211,7 @@ namespace RestoProject.Migrations
                 columns: new[] { "Id", "CategoryId", "DateCreated", "DateUpdated", "Description", "Image", "IsDeleted", "IsPublic", "Name", "Views" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Nasi goreng adalah makanan jalanan populer di Asia. Di beberapa negara Asia, restoran-restoran kecil, gerai-gerai pinggir jalan dan pedagang keliling mengkhususkan diri dalam menyajikan nasi goreng.", "https://placehold.co/200x200/png?text=Nasi+Goreng+Kambing", false, false, "Nasi Goreng Kambing", 0 },
+                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Nasi goreng adalah makanan jalanan populer di Asia. Di beberapa negara Asia, restoran-restoran kecil, gerai-gerai pinggir jalan dan pedagang keliling mengkhususkan diri dalam menyajikan nasi goreng.", "https://placehold.co/200x200/png?text=Nasi+Goreng\\nKambing", false, false, "Nasi Goreng Kambing", 0 },
                     { 2, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Sate kambing adalah sejenis makanan sate terbuat dari daging kambing. daging kambing tersebut disate (ditusuk dengan bambu yang dibentuk seperti lidi yang agak besar) dan dibumbui dengan rempah-rempah dan bumbu dapur, kemudian dibakar.", "https://placehold.co/200x200/png?text=Sate+Kambing", false, false, "Sate Kambing", 0 },
                     { 3, 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Jus atau sari adalah minuman yang terbuat dari ekstraksi atau pemerasan cairan alami yang terkandung dalam buah dan sayuran.", "https://placehold.co/200x200/png?text=Jus", false, false, "Jus", 0 },
                     { 4, 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Es krim' merupakan sebuah makanan beku yang dibuat dari produk susu seperti krim, lalu dicampur dengan perasa dan pemanis buatan ataupun alami. terdapat beberapa vaian rasa", "https://placehold.co/200x200/png?text=Ice+Cream", false, false, "Es Krim", 0 }
@@ -238,9 +234,9 @@ namespace RestoProject.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_DishOrderOrderId",
+                name: "IX_Orders_OrderId",
                 table: "Orders",
-                column: "DishOrderOrderId");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TMDish_CategoryId",

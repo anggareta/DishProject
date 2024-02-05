@@ -19,8 +19,8 @@ else
     <InputText id="name" @bind-Value="dishOrder.Name" class="form-control" />
   </div>
   <div class="mb-3">
-    <label for="description" class="form-label">Description</label>
-    <InputText id="description" @bind-Value="dishOrder.Description" class="form-control" />
+    <label for="description" class="form-label">Message</label>
+    <InputTextArea id="description" @bind-Value="dishOrder.Description" class="form-control" />
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
