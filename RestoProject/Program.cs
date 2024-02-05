@@ -5,6 +5,7 @@ using RestoProject.Data;
 using RestoProject.Services.CategoryService;
 using RestoProject.Services.DishService;
 using RestoProject.Services.StatsService;
+using RestoProject.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IStatsService, StatsService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

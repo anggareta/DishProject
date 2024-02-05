@@ -1,6 +1,7 @@
 @page "/c/{categoryurl}"
 @inject ICategoryService CategoryService
 @inject IDishService DishService
+@inject IStatsService StatsService
 @implements IDisposable
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
@@ -44,6 +45,9 @@
     {
       category = null;
     }
+
+    await StatsService.IncrementVisits();
+    await StatsService.GetVisits();
   }
 
   protected override void OnInitialized()
@@ -53,7 +57,7 @@
 
   public void Dispose()
   {
-    DishService.OnChange += StateHasChanged;
+    DishService.OnChange -= StateHasChanged;
   }
 
   private string GetPriceText(Dish product)

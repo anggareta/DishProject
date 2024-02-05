@@ -16,10 +16,14 @@ namespace RestoProject.Data
     public DbSet<Flavor> TMFlavor { get; set; }
     public DbSet<DishVariant> TTDishVariant { get; set; }
     public DbSet<Stats> Stats { get; set; }
+    public DbSet<Users> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<Users>()
+        .HasKey(k => new { k.Username });
 
       modelBuilder.Entity<DishVariant>()
         .HasKey(p => new { p.DishId, p.FlavorId });
