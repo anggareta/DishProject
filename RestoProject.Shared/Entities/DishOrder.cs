@@ -13,9 +13,11 @@ namespace RestoProject.Shared.Entities
     [StringLength(20)]
     public required string OrderId { get; set; }
 
-    public required string Name { get; set; }
+    public string? Name { get; set; }
 
-    public string Description { get; set; }
+    public string? Description { get; set; }
+
+    public List<CartItem> CartItems { get; set; }
 
     public DateTime OrderTime { get; set; }
   }

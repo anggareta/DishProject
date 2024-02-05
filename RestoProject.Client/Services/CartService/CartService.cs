@@ -1,12 +1,15 @@
 using Blazored.LocalStorage;
 using Blazored.Toast.Services;
 using RestoProject.Client.Services.DishService;
+using RestoProject.Shared.DTOs;
 using RestoProject.Shared.Entities;
+using System.Net.Http.Json;
 
 namespace RestoProject.Client.Services.CartService
 {
   public class CartService : ICartService
   {
+    private readonly HttpClient _http;
     private readonly ILocalStorageService _localStorage;
     private readonly IToastService _toastService;
     private readonly IDishService _dishService;
@@ -14,10 +17,12 @@ namespace RestoProject.Client.Services.CartService
     public event Action OnChange;
 
     public CartService(
+      HttpClient http,
       ILocalStorageService localStorage,
       IToastService toastService,
       IDishService dishService)
     {
+      _http = http;
       _localStorage = localStorage;
       _toastService = toastService;
       _dishService = dishService;
@@ -80,5 +85,13 @@ namespace RestoProject.Client.Services.CartService
       OnChange.Invoke();
     }
 
+    public async Task SubmitCart(DishOrder dishOrder)
+    {
+      var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+      dishOrder.CartItems = cart;
+      var restult = await _http.PostAsJsonAsync("api/dishorders", dishOrder);
+      await _localStorage.RemoveItemAsync("cart");
+      OnChange.Invoke();
+    }
   }
 }

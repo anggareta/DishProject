@@ -25,11 +25,11 @@
                            class="form-control" style="width: 70px" />
             </EditForm>
           </div>
-          <div class="item-price">$@(item.Price * item.Quantity)</div>
+          <div class="item-price">Rp @(item.Price * item.Quantity)</div>
         </div>
       }
       <div class="item-price">
-        Total (@cartItems.Count): $@cartItems.Sum(item => item.Price * item.Quantity)
+        Total (@cartItems.Count): Rp @cartItems.Sum(item => item.Price * item.Quantity)
       </div>
       <div style="text-align: center; margin-top: 10px;">
         <button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
@@ -50,16 +50,50 @@ else
           <h5><a href="/product/@item.DishId">@item.DishName</a></h5>
           <span>@item.FlavorName</span><br />
         </div>
-        <div class="item-price">$@(item.Price * item.Quantity)</div>
+        <div class="item-price">Rp @(item.Price * item.Quantity)</div>
       </div>
     }
     <div class="item-price">
-      Total (@cartItems.Count): $@cartItems.Sum(item => item.Price * item.Quantity)
+      Total (@cartItems.Count): Rp @cartItems.Sum(item => item.Price * item.Quantity)
     </div>
   </div>
 }
 
+<div class="modal-backdrop fade @(show ? "show" : "") @(display ? "d-block" : "d-none")"></div>
+
+<div class="modal fade @(show ? "show" : "")  @(display ? "d-block" : "d-none")" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login Form</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <InputText id="name" @bind-Value="dishOrder.Name" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <InputText id="description" @bind-Value="dishOrder.Description" class="form-control" />
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" @onclick="Order">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @code {
+  public bool show, display, loggedIn;
+  public DishOrder dishOrder { get; set; } = new DishOrder { OrderId = "" };
+
   List<CartItem> cartItems = new List<CartItem>();
   bool orderPlaced = false;
 
@@ -76,7 +110,28 @@ else
 
   private async Task PlaceOrder()
   {
+    display = true;
+    await Task.Delay(100);
+    show = true;
+  }
+
+  // private async Task PlaceOrder()
+  // {
+  //   orderPlaced = true;
+  //   await CartService.EmptyCart();
+  // }
+
+  private async Task Order()
+  {
+    show = false;
+    await CartService.SubmitCart(dishOrder);
+    display = false;
     orderPlaced = true;
-    await CartService.EmptyCart();
+  }
+  private async Task Close()
+  {
+    show = false;
+    await Task.Delay(500);
+    display = false;
   }
 }
