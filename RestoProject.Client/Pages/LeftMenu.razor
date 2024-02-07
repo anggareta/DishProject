@@ -1,16 +1,9 @@
-﻿@inject ICategoryService CategoryService
+﻿
 @inject ILocalStorageService LocalStorage
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
 
-@foreach (var category in CategoryService.Categories)
-{
-  <div class="nav-item px-3" b-iu4f229qen>
-    <NavLink class="nav-link" href="@($"c/{category.Url}")">
-      <span class="bi @category.Icon" aria-hidden="true" b-iu4f229qen></span> @category.Name
-    </NavLink>
-  </div>
-}
+
 
 
 @code {
@@ -23,10 +16,7 @@
     collapseNavMenu = !collapseNavMenu;
   }
 
-  protected override async Task OnInitializedAsync()
-  {
-    await CategoryService.LoadCategories();
-  }
+  
 
   private async void Logout()
   {
